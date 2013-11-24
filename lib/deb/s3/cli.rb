@@ -287,6 +287,9 @@ class Deb::S3::CLI < Thor
     error("No value provided for required options '--bucket'") unless options[:bucket]
 
     settings = { :s3_endpoint => options[:endpoint] }
+    if File.exists? '/etc/ssl/certs/ca-certificates.crt'
+      settings.merge!({ :ssl_ca_file => '/etc/ssl/certs/ca-certificates.crt' })
+    end
     settings.merge!(provider.credentials)
 
     Deb::S3::Utils.s3          = AWS::S3.new(settings)
