@@ -67,9 +67,16 @@ module Deb::S3::Utils
       file_md5 = Digest::MD5.file(path)
       return if file_md5.to_s == obj.etag.gsub('"', '')
     end
+    
+    content_type = case File.extname(filename)
+      when '.deb'
+        'application/x-debian-package'
+      else
+        'text/plain'
+    end
 
     # upload the file
-    obj.write(Pathname.new(path), :acl => Deb::S3::Utils.access_policy)
+    obj.write(Pathname.new(path), :acl => Deb::S3::Utils.access_policy, :content_type => content_type)
   end
 
   def s3_remove(path)
